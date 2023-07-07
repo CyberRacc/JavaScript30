@@ -59,7 +59,12 @@
     <audio data-key="KeyL" src="sounds/tink.wav"></audio>
 
   <script>
-    window.addEventListener("keydown", function (e) {
+
+    let keysBeingPressed = {} // This will hold the flags for each key.
+
+    function playSound(e) {
+      if (keysBeingPressed[e.code]) return;
+      keysBeingPressed[e.code] = true;
       console.log(e.code);
       const audio = document.querySelector(`audio[data-key="${e.code}"]`);
       const key = document.querySelector(`.key[data-key="${e.code}"]`);
@@ -68,20 +73,24 @@
       audio.play();
       console.log(key);
       key.classList.add("playing");
-    });
+    }
 
     function removeTransition(e) {
       if(e.propertyName !== "transform") return; // Skip if it's not a transform.
-      console.log(e.propertyName)
+      console.log(e.propertyName);
     }
 
     const keys = document.querySelectorAll(".key");
-    keys.forEach(key => key.addEventListener("transitioned", removeTransition));
+    keys.forEach(key => key.addEventListener("transisionend", removeTransition));
 
     window.addEventListener('keyup', function(e) {
+      keysBeingPressed[e.code] = false; // Resets the flag for this key.
       const key = document.querySelector(`.key[data-key = "${e.code}"]`);
       key.classList.remove('playing');
     });
+
+    window.addEventListener("keydown", playSound);
+
   </script>
 
   </body>
